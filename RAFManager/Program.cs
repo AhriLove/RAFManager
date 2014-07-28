@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using zlib = ComponentAce.Compression.Libs.zlib;
-
+using System.Linq;
 
 // http://leagueoflegends.wikia.com/wiki/RAF:_Riot_Archive_File
 namespace RAFManager
@@ -118,14 +118,19 @@ namespace RAFManager
                         rafPathList.PathStrings.Add(Encoding.ASCII.GetString(binaryReaderRaf.ReadBytes(pathLength - 1)));
                     }
 
+
+                    // 120 = 100% 60 = x   100
                     for (int i = 0; i < rafFileHeader.FileList.Entries.Count; i++)
                     {
-                        int fileListEntryOffset = BitConverter.ToInt32(rafFileHeader.FileList.Entries[i].DataOffset, 0);
-                        int fileListEntryDataSize = BitConverter.ToInt32(rafFileHeader.FileList.Entries[i].DataSize, 0);
+                        Console.Write("\x000D{0}%   ", ((double)i / (double)rafFileHeader.FileList.Entries.Count * 100).ToString("0.00"));
+                        var fileListEntry = rafFileHeader.FileList.Entries.FirstOrDefault(item => BitConverter.ToInt32(item.PathListIndex, 0) == i);
+
+                        int fileListEntryOffset = BitConverter.ToInt32(fileListEntry.DataOffset, 0);
+                        int fileListEntryDataSize = BitConverter.ToInt32(fileListEntry.DataSize, 0);
                         binaryReadRafDat.BaseStream.Position = fileListEntryOffset;
                         byte[] buffer = binaryReadRafDat.ReadBytes(fileListEntryDataSize);
 
-                        string path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), Path.GetFileName(rafFileHeader.PathList.PathStrings[i]));
+                        string path = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "export", rafFileHeader.PathList.PathStrings[i]));
                         try
                         {
                             using (MemoryStream mStream = new MemoryStream(buffer))
@@ -142,12 +147,14 @@ namespace RAFManager
                                 }
                             }
                         }
-                        catch
+                        catch (Exception x)
                         {
                         }
-
-                        File.WriteAllBytes(path, buffer);
-                        Console.WriteLine(path);
+                        if (!Directory.Exists(Path.GetDirectoryName(path)))
+                        {
+                            Directory.CreateDirectory(Path.GetDirectoryName(path));
+                        }
+                        File.WriteAllBytes(path, buffer);                                     
                     }
                 }
             }
