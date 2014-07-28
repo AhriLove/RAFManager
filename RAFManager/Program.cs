@@ -117,9 +117,7 @@ namespace RAFManager
                         binaryReaderRaf.BaseStream.Position = positionPathList + pathOffset;
                         rafPathList.PathStrings.Add(Encoding.ASCII.GetString(binaryReaderRaf.ReadBytes(pathLength - 1)));
                     }
-
-
-                    // 120 = 100% 60 = x   100
+                    
                     for (int i = 0; i < rafFileHeader.FileList.Entries.Count; i++)
                     {
                         Console.Write("\x000D{0}%   ", ((double)i / (double)rafFileHeader.FileList.Entries.Count * 100).ToString("0.00"));
