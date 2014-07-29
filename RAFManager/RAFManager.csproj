@@ -39,13 +39,11 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="zlib.net">
-      <HintPath>..\..\..\..\Desktop\raflib-plus-bdf0d222d901\zlib.net.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RafDat.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
